@@ -1,0 +1,15 @@
+* sqllder 是将数据导入数据库的工具
+
+* load_tmp_data.ctl
+```
+Load data         
+infile 'cdrk.csv'         
+Append into table TEMP_LYB_99533
+FIELDS TERMINATED BY ','
+trailing nullcols
+(EXTEND_ID,TIMES,flag)
+
+```
+
+* cmd中的命令
+sqlldr username/passwd@tns control=load_tmp_data.ctl errors=10000

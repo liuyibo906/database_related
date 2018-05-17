@@ -1,0 +1,427 @@
+SQL plus 指令
+Save name.sql 保存缓存到文件
+Get name.sql读取到缓存
+Start name.sql 等同 @name.sql
+Edit name.sql 编辑
+Spool 1.txt 保存界面记录到文件
+Spool off 关闭记录
+
+SET pagesize 100 设置不分开显示行数的限制
+SET linesize NUM 设置列显示的列数
+
+&表示输入一临时变量
+SET VERIFY OFF  不显示old 和new 命令行不显示验证消息
+SET VERIFY ON 显示old 和new
+SET define '#'也可以指定临时变量#num
+
+&可以替换列和表 SELECT &clo FROM &TABLE 
+
+define 定义变量 undefine 删除定义变量 define v_product_id=7
+
+accept varible_name TYPE formate[] promt[] HIDE 定义变量的名称 类型 格式 是否隐式输入 accept product_id NUMBER format 99 promot 'product_id'
+
+SELECT 'drop table' || 'table_name'||';' FROM user_tablel;自动生成大量sql语句
+
+INSTR('abcdefga','a',2)在字符串中查找字符串返回位置值
+
+INITCAP('CHAR') 首字母大写
+
+NVL2（x,value1,value2）x为非空返回value1，空返回value2
+
+to_char(12.34,'$99.99') 转换为字符
+
+CAST（12.34 AS VARCHAR2（10））将其他类型转换为指定类型
+
+ALTER SESSION SET nls_date_format=''设置系统默认时间格式   ALTER SESSION SET TIME ZONE= 设置时区
+  
+TIMESTAMP 时间戳类型，涵盖秒后9位小数 TIMESTAMP WITH TIME ZONE 含时区时间戳  TIMESTAMP WITH LOCAL TIME ZONE 
+
+INTERVAL YEAR TO MONTH 时间间隔类型    INTERVAL '[+/-][y][-m]' YEAR(内设精度） TO MONTH   例 INTERVAL '1-3'YEAR TO MONTH 相隔1年3个月
+
+INTERVAL DAY TO SECOND 示例 INTERVAL '3' DAY 间隔3天   INTERVAL '3 2：33:33' DAY TO SECOND 间隔3天2时33分33秒
+
+TRANSLATE(X,FROM_STRING,TO_STRING)把x中的from_STRING转化为to_string  例 TRANSLATE('ABCABC','ABC','123') 函数结果123123，REPLACE 函数相似。
+
+UNION ALL 连接含重复行，UNION 连接不含重复的 INTERSECT 交集 MINUS 差集
+
+ordre BY 1,可以用来表示用第一列来排序。
+
+LP连接不含重复的AD(str1,LEN,PAD )   LPAD('x',5,3)====3333x 填充pad字符到len长度。
+
+SELECT LEVEL,COLUMN  FROM TABLE WHERE START WITH ... CONNECT BY PRIOR ....  层次化查询（根为level 1）CONNECT BY PRIOR 后的条件决定了是
+从上到下的遍历 还是从下往上的遍历。父=子 从上往下  子=父从下往上。 另外删除层次中的节点，不会影响其子节点的遍历。
+
+ROLLUP时group by的扩展。GROUP BY ROLLUP（）功能多出group 后的组的和行。
+CUBE 也是group by的扩充函数。
+
+GROUPING() 配合函数rollup 函数使用，当grouping（）的参数为空时，返回1，非空返回0。
+
+EXECUTE DBMS_FLASHBACK.ENABLE_AT_TIME(SYSDATE-10/1400);闪回到10分钟前
+
+EXECUTE DBMS_FLASHBACK.ENABLE_AT_SYSTEM_CHANGE_NUMBER(;SCN) 闪回到一个scn号
+
+
+CREATE TABLE students（sno PRIMARY key，
+       sdate DATE DEFAULT SYSDATE）定义列时默认值。
+CREATE USER user_name IDENTIFIED BY PASSWORD  创建新用户
+
+GRANT EXECUTE ANY PROCEDURE TO USER_NAME  WITH ADMIN OPTION 将执行任何模式中存储过程的权限付给user_name 并且也有赋予其他用户该权限的权限
+
+USER_SYS_PRIVS 用户全新表
+
+系统特权：允许用户对数据库中执行的特定操作权限
+
+对象特权：允许用户对数据库对象的操作权限（ SELECT INSERT UPDATE DELETE EXECUTE） 
+ 
+USER_TAB_PRIVS_MADE拥有的对象权限     USER_TAB_PRIVS_RECD 接受的对象权限
+
+CREATE SYNONYM CUSTOMER FROM TC.CUSTOEMR 为用户建表的同义词
+
+CREATE PUBLIC SYNONYM CUSTOMER FOR T.CUSTOMER 为所有用户创建同义词（表的所有人）
+
+创建角色需拥有特权 CREATE ROLE 
+
+GRANT CREATE ROLE TO LYB 用户授权，
+
+CREATE ROLE PRODUCT_MANAGER ; 创建角色
+
+GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE_NAME TO USER_NAME 为角色赋权
+
+GRANT role_NAME TO USER_NAME 
+
+User_Role_Privs 用户的角色
+role_sys_privs 角色的系统特权
+ROLE_table_privs 角色的对象特权
+AUDIT CREATE_TABLE 审计创建表操作
+AUDIT CREATE_TABLE BY LYB 审计lyb用户的创建表操作
+
+
+USER_TABLES 用户的所有表（视图）， ALL_TABLES 所有表（视图）
+
+USER_CONSTRAINTS 表约束信息视图
+
+RENAME TABLE A TO B 重命名表
+
+COMMENT ON TABLE table_name IS 'THIS IS COMMENT';  USER_TAB_COMMENTS 表注释
+COMMENT ON COLUMN STU.SNO IS 'COMMENT'; USER_COL_COMMENTS 列注释
+
+CREATE SEQUENCE MYSEQ START WITH 5 INCREMENT BY 1 MAXVALUE 10 MINVALUE 5 CYCLE CACHE 2;序列的定义。
+
+索引
+CREATE INDEX MY_INDEX ON STUDENTS(SNO)创建索引
+
+CREATE INDEX MY_INDEX ON STUDENTS(SUBSTR(SNO,1)) 创建函数索引 
+
+USER_INDEXES   USER_IND_COLUMNS  
+
+ALTER INDEX MY_INDEX RENAME TO NEW_MY_INDEX 重命名索引
+
+DROP INDEX MY_INDEX 删除索引
+
+视图
+
+CREATE VIEW VIEW_NAME AS SUBQUARY 创建视图
+
+GRANT CREATE VIEW TO USRE_NAME 授权创建视图
+
+CREATE VIEW VIEW_NAME AS 
+SELECT * FROM STUDENTS
+WHERE SNO<200
+WITH CHECK OPTION CONSTRAINT STUDENT_SNO    具有check option功能的视图
+
+CREATE VIEW STUDENTS_VIEW AS 
+SELECT * FROM stuents
+WHERE SNO<200
+WITH READ ONLY CONSTRAINT STUDENTS_READ_ONLY 具有read ONLY 功能的视图（无法插入数据）
+
+闪回数据归档
+
+CREATE FLASHBACK ARCHIVE TEST_ARCHIVE  TABLESPACE EXAMPLE QUOTA 1M RETENTION 1 DAY;创建闪回归档空间到example 表空间,大小1M，时间1天
+
+ALTER TABLE STORE.PRODUCT FLASHBACK ARCHIVE TEST_ARCHIVE 表中插入归档
+
+
+PL/SQL 代码块
+DECLARE
+ DECLARATION_STATEMENT
+BEGIN
+  EXECUTE_STATEMENT
+EXCEPTION
+  EXCEPTION_HANDING_STATEMENTS
+END;
+/
+
+变量声明
+V_PRODUCT_PRICE T.PRODUCT_PRICE%TYPE  变量的类型和T.PRODUCT_PROCE相同
+条件
+IF THEN ELSIF THEN ELSE END IF;
+循环                          FOR循环                               WHILE循环
+LOOP                          FOR VARIABLE IN A..B LOOP             WHILE CONDITION LOOP
+STATEMENT                     STATEMNET                             STATEMENT
+END LOOP;                     END LOOP;                             END LOOP;
+
+CURSOR
+（1）DECLARE 声明变量
+（2）CURSOR CURSOR_NAME IS SELECT_STATEMENT 游标的创建
+（3）OPEN CURSOR_NAME 打开游标
+ （4）FETCH CURSOR_NAME INTO VARIABLE 将游标导入变量中
+ （5）CLOSE CURSOR_NAME 关闭游标
+ 
+
+DECLARE 
+CURSOR  V_PRODUCTS_CURSOR IS SELECT 
+PRODUCT_ID,PRICE,NAME FROM PRODUCTS
+BEGIN
+FOR V_PRODUCT IN V_PRODUCT_CURSOR LOOP
+ DBMS_OUTPUT.PUT_LINE()
+END LOOP;
+END;
+/
+
+EXCEPTION 
+ZERO_DIVIDE 除以0异常
+DUA_VAL_ON_INDEX 试图向唯一索引行插入相同值
+INVALID_NUMBER 将无用的字符转化为数字
+ OTHER 可以处理所有异常 --所以必须在特定的异常之后使用该异常
+ 
+过程
+创建过程
+CREATE (OR REPLACE) PROCEDURE PROCEDURE_NAME (
+PARAMETERS1 IN TYPE,
+PARAMETERS2 IN TYPE) AS 
+BEGIN
+  PROCEDURE_BODY
+END PROCEDURE_NAME;
+/ 
+
+过程调用  CALL PROCEDURE_NAME(PARAMETERS1，PARAMETERS2) ;
+显示调用 CALL PROCUDURE_NAME(PARAMETERS1=>A,PARAMETERS2=>B);
+混合调用 CALL UPGRADE_PRODUCT_PRICE(1.3,PRODUCT_ID=>3);
+USER_PROCEDURES 查看过程相关信息
+
+DROP PROCEDURE PROCEDURE_NAME； 删除过程
+
+过程运行错误使用  SHOW ERROR 命令来查看error部分
+
+函数
+
+创建函数
+CREATE (OR REPLACE) FUNCTION FUNCTION_NAME 
+(PARAMETER_NAME (IN /OUT/ IN OUT) TYPE,
+PARAMETER_NAME2 (IN/OUT/IN OUT) TYPE
+) RETURN TYPE AS|IS
+BEGIN
+FUNCTION_BODY
+END FUNCTION_NAME;
+/
+调用函数
+SELECT FUNCTION() FROM DUAL;
+删除函数
+DROP FUNCTION FUNCTION_NAME;
+
+
+包
+包通常包含两个部分：规范（specification）和包体（body）
+包的规范列出可用的过程、函数、类型和对象，所有的数据库用户都可以访问，规范中不包含构建过程和函数的代码。
+创建包规范
+CREATE (OR REPLACE) PACKAGE package_name
+(IS /AS )
+PACKAGE SPECIFICATION
+END package_name;
+创建包体
+CREATE( OR REPLACE) PACKAGE BODY package_name
+{IS|AS} 
+package_body
+END package_name;
+调用包中函数
+CALL package_name.procedure_name(parameters);
+SELECT package_name.function_name FROM dual; 
+删除包
+DROP PACKAGE package_name;
+
+
+
+触发器
+在DML语句运行之前和之后激活。
+行级触发器（row_level_triger：每行触发器都运行一次。
+语句级触发器（statement_level_triger）:触发器激活一次，与语句行数无关。
+创建触发器
+CREATE [OR REPLACE] TRIGGER trigger_name 
+{BEFORE |AFTER| INSTEAD OF| FOR }triger_event
+ON table_name
+FOR EACH ROW
+{ENABLE|DISABLE}
+  WHEN （trigger_condition）
+BEGIN 
+  trigger_body
+END trigger_name;
+/  
+禁用和激活触发器
+ALTER TRIGGER trigger_name ENABLE
+ALTER TRIGGER trigger_name DISABLE
+删除触发器
+DROP TRIGGER trigger_name
+
+orcal 11g增加的pl/sql特性
+simple_integer 是binary_integer的子类，存储范围相同，simple_integer 不能存储null值，且不会产生溢出
+simple_integer数值相加溢出被截止，可以从正数循环到负数，也可从负数循环到正数。
+
+
+创建对象类型 --object对象
+CREATE TYPE t_address AS OBJECT(
+street VARCHAR2(20),--属性
+city VARCHAR2(20),
+state Char(2),
+zip VARCHAR2(5) 
+);
+/
+
+对象类型中包含函数的声明则必须创建对象体（BODY）CREATE TYPE BODY
+
+使用describe 函数查看对象类型的信息 describe object_name
+
+SET describe DEPTH 2 设置描述的深度。
+
+数据库中使用对象类型
+列对象
+CREATE TABLE product（
+product t_product，--列对象
+quality INTEGER
+）；
+对该 product表插入数据时必须使用构造函数为 t_product 插入列值
+INSERT INTO product（product，quality） values(t_product(1,'pasion',3.95,10),10) 
+
+对象表
+表中只包含对象列
+CREATE TABLE object_product OF t_product;
+
+INSERT INTO object_product VALUES(1,'pasion',3.94,10) 或 
+INSERT INTO object_product VALUES(t_product(1,'pasion',3.94,10))使用构造函数。
+
+对象标识符和对象引用
+ref（）函数可以查看某对象的ODI ，odi就是对象在数据库中的位置
+
+对象引用
+CREATE TABLE purchases（
+ID INTEGER PRIMARY KEY，
+customer_ref REF t_customer SCOPE IS object_customer,--引用对象，对象限制在后面表中
+product_ref REF t_product SCOPE IS object_product 
+)
+
+插入数据
+INSERT INTO purchase(ID,customer_ref,product_ref)
+ VALUES(1,(SELECT REF() FROM object_customer WHERE oc.customer.id=1)
+ (SELECT REF() FROM object_product WHERE op.product.id=1))
+ 
+查看数据（deref函数可以查看存储在引用对象中的实际值）
+SELECT DEREF(customer_ref),DEREF(product_ref) FROM purchase
+
+更新数据
+UPDATE purchase SET customer_ref=(SELECT ref（oc） FROM object_customer WHERE oc.id=2)
+
+
+对象类型的继承
+继承的类型定义是要加上not final来限制。
+例：CREATE TYPE t_person AS OBJECT(
+ID INTEGER,
+FIRST_name VARCHAR2(10),
+final_name VARCHAR2(10),
+...
+)NOT FINAL;
+/
+为了让新增的类型属性能继承其他类型使用under关键字（--t_business_person 子类型）
+CREATE TYPE t_business_person UNDER t_person AS OBJECT(
+title VARCHAR2(20),
+company VARCHAR2(20)
+);
+/--该类型继承了t_person（超类型）的所有属性，具有t_person所有的字段。
+
+CREATE TABLE object_customers OF t_person;
+INSERT INTO object_customers VALUES(t_person（...）);
+同样可以在表中插入其子类型 t_business_person，但是查询时不会有子类新的新属性。
+INSERT INTO object_customer VALUES(t_business_person(...));
+若想限制其他类型的对象都不可插入超类型对象的表中学设置限制not substitutable（不可替代），
+CREATE TABLE object_customer2_not_subs OF t_person NOT SUBSTITUTABLE AT ALL LEVELS;
+除将对象设置为不可替代属性外表中的列也可设置
+COLUMN product NOT SUBSTITUTABLE AT ALL LEVELS;
+
+
+除了 REF() DEREF() VALUE() 函数外，还有其他可用的函数
+IS OF() 来检测一个对象是否属于该对象
+SELECT VALUE(o) FROM object_business_customers o WHERE VALUES(o) IS OF （t_business_customer，t
+_person）;
+如果属于该对象类型则返回一行表中数据，另外，可以有是否属于多个类型的，即括号中多个对象参数。
+SELECT VALUE(o) FROM object_business_customers o WHERE VALUES(o) IS OF (ONLY t_person)
+限制只能是t_person 如果是t_person的子类则不返回true 
+
+TREAT() 来检测是否可以视为类型对象（子类型对象是否可视为超类型对象）
+SELECT NVL2(treat(VALUE(o) AS t_person ),YES,NO) FROM object_customer o WHERE o.first_name='steve'
+AND last_name='edwards'
+
+sys_typeid()查看对象类型的id
+SELECT o.first_name,o.last_name,sys_typeid(VALUE(o)) FROM object_customer o ; 
+可以使用user_types 查看用户类型的属性
+
+如果对象类型只是为了做超级类型，不添加对象则用not INSTANTIABLE 来限制
+CREATE TYPE t_vesage AS OBJECT(
+ID INTEGER,
+.....)
+NOT FINAL NOT INSTANTIABLE;
+/
+
+用户自定义构造函数。
+重载方法 OVERRIDING 关键词
+子类型 重写超类型的方法
+OVERRIDING MEMBER FUNCTION display_detail RETURN VARCHAR2 --调用时调用的重写后的方法
+
+通用调用
+重载方法后 RETURN(SELF AS t_person).display_detail || ',title='||title || ',company='||company
+
+
+创建集合类型
+CREATE TYPE t_varry_address AS varray(3) OF Varchar2(50) --创建可变长数组集合类型，最长可存3个数据。
+变长数组无法单个更改，必须所有数据一起更改。
+
+ALTER TYPE t_varry_address MODIFY LIMIT 10 CASCADE --修改数组最大长度为10
+
+CREATE TYPE t_nested_table_address AS TABLE OF t_address --创建嵌套表的数据类型，存储t_address对象类型
+不需要制定嵌套表的大小，因为可以存储任意数目的元素
+
+--使用变长数组定义表列
+CREATE TABLE customer_with_varray(
+ID INTEGER,
+first_NAME Varchar2(20),
+last_name VARCHAR2(20),
+address t_varry_address
+); --变长数组大小小雨4kB时，变长数组元素存在表中，否则存在表外，存在表中的变长数组元素访问比嵌套表块。
+
+--使用嵌套表定义表列
+CREATE TABLE customer_with_nested_table(
+ID INTEGER,
+first_name VARCHAR2(20),
+last_name VARCHAR2(20),
+address t_nested_table_address
+)NESTED TABLE address STORE AS NESTED_addresses--nested table设定嵌套表列名，store as 制定嵌套表实际名
+
+describe 变长数组名/使用变长数组定义的表  --查看详情
+
+SET describe DEPTH 2 --查看描述的深度设置。
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+

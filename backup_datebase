@@ -1,0 +1,64 @@
+SELECT max(backup_time) FROM backup_database t ;
+
+--每次执行备份
+INSERT INTO backup_database
+  (SELECT x.*, trunc(SYSDATE) backup_time--添加备份时间
+     FROM all_source x
+    WHERE x.owner = (SELECT username FROM user_users)--当前用户
+      AND EXISTS
+    (SELECT 1
+             FROM all_objects t
+            WHERE t.object_type IN ('PACKAGE',
+                                    'PROCEDURE',
+                                    'TRIGGER',
+                                    'PACKAGE BODY',
+                                    'FUNCTION')
+              AND owner = (SELECT username FROM user_users)
+              AND x.name = t.object_name));
+COMMIT;				
+
+
+
+
+
+
+
+/*
+--删掉备份表
+DROP table backup_database;
+
+--创建备份表
+CREATE table backup_database as (
+SELECT x.*, trunc(SYSDATE) backup_time
+  FROM all_source x
+ WHERE x.owner = (SELECT username FROM user_users)
+   AND EXISTS (SELECT 1
+          FROM all_objects t
+         WHERE t.object_type IN ('PACKAGE',
+                                 'PROCEDURE',
+                                 'TRIGGER',
+                                 'PACKAGE BODY',
+                                 'FUNCTION')
+           AND owner = (SELECT username FROM user_users)
+           AND x.name = t.object_name)
+)
+
+--删除两个月之前的备份
+DELETE FROM backup_database t WHERE t.backup_time< TRUNC(add_months(SYSDATE,-2));
+COMMIT;	
+
+
+--恢复备份脚本
+SELECT t.line, t.text
+  FROM backup_database t
+ WHERE t.backup_time >= DATE '2014-11-3'
+   AND t.owner = (SELECT username FROM user_users)
+   AND t.name = 'PKG_LIFE_PS_PUBLIC'
+   AND t.type = 'PACKAGE BODY'--PACKAGE  PACKAGE BODY
+ ORDER BY t.line;
+
+
+*/			
+
+
+

@@ -1,0 +1,30 @@
+select trunc(sysdate) from dual  结果是 截止到当日
+不设置，默认是截止到”日“
+
+  select trunc(sysdate,'year') from dual; 
+--获取到本年 第一天
+
+select trunc(sysdate,'month') from dual; 
+--获取到 本月 第一天 
+
+select trunc(sysdate,'q') from dual; 
+--获取到本季度 第一天
+
+select trunc(sysdate,'iw') from dual; 
+--本周一
+
+ select trunc(sysdate,'ww') from dual;  
+-- 获取离当前时间最近的周四，若当天为周四则返回当天，否则返回上周四
+
+select trunc(sysdate,'day') from dual; 
+--获取到周（本周第一天，即上周日）
+
+select trunc(sysdate,'hh24') from dual;  
+--截取到小时（当前小时，零分零秒）
+
+select trunc(sysdate,'mi') from dual; 
+--截取到分（当前分，零秒）
+
+SELECT TO_CHAR(SYSDATE,’DY’) FROM DUAL
+
+--显示当前是周几

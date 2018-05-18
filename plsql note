@@ -1,0 +1,445 @@
+-->声明一个常量
+常量使用CONSTANT关键字声明。它需要一个初始值，并且不允许被改变该值
+PI CONSTANT NUMBER := 3.141592654;
+
+-->CASE语句
+CASE selector
+    WHEN 'value1' THEN S1;
+    WHEN 'value2' THEN S2;
+    WHEN 'value3' THEN S3;
+    ...
+    ELSE Sn;  -- default case
+END CASE;
+
+或者另一种
+CASE
+    WHEN selector = 'value1' THEN S1;
+    WHEN selector = 'value2' THEN S2;
+    WHEN selector = 'value3' THEN S3;
+    ...
+    ELSE Sn;  -- default case
+END CASE;
+
+
+
+PL/SQL循环
+-->1.for循环
+for i in 1..10 loop
+...
+end loop;
+反转
+for i in reverse 1..10 loop
+...
+end loop;
+
+-->2.loop 循环
+在这里，声明(S)的序列可以是单个语句或语句块。 EXIT指令或EXIT WHEN语句需要退出循环。
+LOOP
+  Sequence of statements;
+END LOOP;
+
+-->3.while 循环
+WHILE condition LOOP
+   sequence_of_statements
+END LOOP;
+
+
+
+PL/SQL EXIT语句
+--直接退出
+EXIT;
+
+--条件退出
+exit when conditon;
+
+PL/SQL GOTO语句
+
+
+GOTO语句强加以下限制：
+goto语句不能跳转到IF语句，CASE语句，循环语句或子块。
+goto语句不能从一个分支IF语句子句到另一个或从一个CASE语句WHEN子句到另一个。
+goto语句不能从外部块分支成子块(即一个内BEGIN-END块)。
+goto语句不能分支出来一个子程序。提前结束子程序，要么使用RETURN语句或子程序结束前在正确的GOTO分支的地方。
+goto语句不能从一个异常处理分支回到当前BEGIN-END块。但是，GOTO语句可以从一个异常处理程序跳转到一个封闭块。
+
+
+PL/SQL数组
+
+创建VARRAY类型
+
+一个VARRAY类型是用CREATE TYPE语句创建。必须指定最大长度，并存储在VARRAY元素的类型。
+
+对于在架构层面创造一个VRRAY类型的基本语法：
+
+CREATE OR REPLACE TYPE varray_type_name IS VARRAY(n) of <element_type>
+varray_type_name 就是一个有效的属性名
+n是VARRAY元素（最大值）的数目
+element_type 就是所述数组的元素的数据类型。
+
+ PL/SQL块创建VRRAY类型的基本语法：
+
+TYPE varray_type_name IS VARRAY(n) of <element_type>;
+示例：
+type namelist is varry(10) of varchar2(10);
+
+在Oracle环境中，可变数组的起始索引始终为1
+一个VARRAY当它被声明自动为NULL值，必须初始化之前，它的元素可以被引用
+可变数组是一维阵列
+可以初始化使用VARRAY类型，它具有相同的名称变长数组的构造方法VARRAY元素
+
+
+ PL/SQL子程序被命名，可使用一组参数来调用PL/SQL块。 PL/SQL提供两种子程序：
+
+    函数：这些子程序返回一个值，主要用于计算并返回一个值。
+
+    过程：这些子程序没有直接返回值，主要用于执行操作
+    
+--PL/SQL过程
+
+CREATE [OR REPLACE] PROCEDURE procedure_name
+[(parameter_name [IN | OUT | IN OUT] type [, ...])]
+{IS | AS}
+BEGIN
+  < procedure_body >
+END procedure_name;
+
+
+
+    procedure-name 指定的程序的名称
+
+    [OR REPLACE] 选项允许修改现有的程序
+
+    可选的参数列表中包含的名称，模式和类型的参数。IN表示该值将被从外部传递，OUT表示该参数将被用于从过程返回一个值到外面
+
+    procedure-body 包含可执行部分
+
+    AS关键字来代替了IS关键字用于创建一个独立的程序。
+
+--PL/SQL函数
+
+ 建立一个独立函数可以使用CREATE FUNCTION语句创建。CREATE OR REPLACE PROCEDURE语句简化语法如下：
+
+CREATE [OR REPLACE] FUNCTION function_name
+[(parameter_name [IN | OUT | IN OUT] type [, ...])]
+RETURN return_datatype
+{IS | AS}
+BEGIN
+   < function_body >
+END [function_name];
+
+这里,
+
+    function-name 指定函数的名称
+
+    [OR REPLACE] 选项允许修改现有的函数
+
+    可选的参数列表中包含的名称，模式和类型的参数。IN表示该值将被从外部传递和OUT表示该参数将被用于过程外面返回一个值
+
+    函数必须包含一个return语句
+
+    RETURN 子句指定要在函数返回的数据类型
+
+    function-body 包含可执行部分
+
+    AS关键字来代替了IS关键字用于创建一个独立的函数
+
+
+示例
+CREATE OR REPLACE FUNCTION totalCustomers
+RETURN number IS
+   total number(2) := 0;
+BEGIN
+   SELECT count(*) into total
+   FROM customers;
+   
+   RETURN total;
+END;
+/
+
+--递归
+DECLARE
+   num number;
+   factorial number;
+
+FUNCTION fact(x number)
+RETURN number 
+IS
+   f number;
+BEGIN
+   IF x=0 THEN
+      f := 1;
+   ELSE
+      f := x * fact(x-1);
+   END IF;
+RETURN f;
+END;
+
+BEGIN
+   num:= 6;
+   factorial := fact(num);
+   dbms_output.put_line(' Factorial '|| num || ' is ' || factorial);
+END;
+/
+
+
+
+
+隐式游标
+Oracle在一个SQL语句的执行，当没有显式游标的语句隐式游标时自动创建。程序员无法控制隐式游标其中的信息
+每当发出一个DML语句（INSERT，UPDATE和DELETE），隐式游标与此语句关联。对于INSERT操作时，光标保持一个需要插入的数据。
+对于UPDATE和DELETE操作，光标标识会受到影响的行。
+在PL/SQL，可以参考最近的隐式游标的SQL游标，它有类似％FOUND，％ISOPEN，％NOTFOUND，和％ROWCOUNT属性。
+在SQL游标有额外的属性，％BULK_ROWCOUNT和％BULK_EXCEPTIONS
+
+
+属性 	描述
+%FOUND 	返回TRUE如果一个INSERT，UPDATE或DELETE语句影响了一行或多行或SELECT INTO语句返回一行或多行。否则，它将返回FALSE。
+%NOTFOUND 	逻辑相反%FOUND。返回TRUE如果一个INSERT，UPDATE或DELETE语句影响没有行或SELECT INTO语句返回任何行。否则，它将返回FALSE。
+%ISOPEN 	隐式游标总是返回FALSE，因为Oracle执行其相关的SQL语句之后自动关闭SQL游标。
+%ROWCOUNT 	返回受INSERT，UPDATE影响的行数，或DELETE语句，或者通过一个SELECT INTO语句返回。
+
+任何SQL游标属性将被访问，SQL％attribute_name如示例图所示
+
+ PL/SQL可以处理记录的以下几种类型：
+
+    基于数据表
+
+    基于游标的记录
+
+    用户自定义记录
+
+在％ROWTYPE属性使程序员创建基于表格和基于游标记录。
+ DECLARE
+   customer_rec customers%rowtype;-- 基于数据表
+BEGIN
+   SELECT * into customer_rec
+   FROM customers
+   WHERE id = 5;
+
+   dbms_output.put_line('Customer ID: ' || customer_rec.id);
+   dbms_output.put_line('Customer Name: ' || customer_rec.name);
+   dbms_output.put_line('Customer Address: ' || customer_rec.address);
+   dbms_output.put_line('Customer Salary: ' || customer_rec.salary);
+END;
+/
+
+基于游标记录
+DECLARE
+   CURSOR customer_cur is
+      SELECT id, name, address 
+      FROM customers;
+   customer_rec customer_cur%rowtype;
+BEGIN
+   OPEN customer_cur;
+   LOOP
+      FETCH customer_cur into customer_rec;
+      EXIT WHEN customer_cur%notfound;
+      DBMS_OUTPUT.put_line(customer_rec.id || ' ' || customer_rec.name);
+   END LOOP;
+END;
+/
+
+用户自定义记录
+
+TYPE
+type_name IS RECORD
+  ( field_name1  datatype1  [NOT NULL]  [:= DEFAULT EXPRESSION],
+   field_name2   datatype2   [NOT NULL]  [:= DEFAULT EXPRESSION],
+   ...
+   field_nameN  datatypeN  [NOT NULL]  [:= DEFAULT EXPRESSION);
+record-name  type_name;
+
+DECLARE
+TYPE books IS RECORD
+(title  varchar(50),
+    author  varchar(50),
+    subject varchar(100),
+    book_id   number);
+book1 books;
+book2 books;
+
+
+
+ 引发异常
+
+异常是数据库服务器自动在内部数据库错误，但异常可以明确地提出由程序员使用命令RAISE。以下是引发异常的简单的语法：
+DECLARE
+   exception_name EXCEPTION;
+BEGIN
+   IF condition THEN
+      RAISE exception_name;
+   END IF;
+EXCEPTION
+   WHEN exception_name THEN
+   statement;
+END;
+
+
+ 预定义异常
+
+PL/SQL提供许多预先定义的异常，这是在被执行时的任何数据库规则由程序引发。例如，预定义异常NO_DATA_FOUND时引发一个SELECT INTO语句返回数据行。下表列出了一些重要的预先定义的异常：
+Exception 	Oracle Error 	SQLCODE 	描述
+ACCESS_INTO_NULL 	06530 	-6530 	当一个空对象会自动分配一个值引发此异常
+CASE_NOT_FOUND 	06592 	-6592 	当没有任何选择，在当选择一个CASE语句的子句，并且没有ELSE子句时被引发
+COLLECTION_IS_NULL 	06531 	-6531 	当程序试图申请其他收集方法不是存在未初始化的嵌套表或VARRAY，或程序试图值分配给未初始化的嵌套表或变长数组的元素时被引发
+DUP_VAL_ON_INDEX 	00001 	-1 	当重复值试图被存储在具有唯一索引的列时被引发
+INVALID_CURSOR 	01001 	-1001 	当尝试以使这是不允许的，如关闭一个未打开的游标的游标操作时被引发
+INVALID_NUMBER 	01722 	-1722 	当一个字符的字符串转换成一个数失败，因为字符串不表示一个有效的数据被引发
+LOGIN_DENIED 	01017 	-1017 	当程序试图登录到数据库使用无效的用户名或密码被引发
+NO_DATA_FOUND 	01403 	+100 	它被引发当一个SELECT INTO语句无任何行返回
+NOT_LOGGED_ON 	01012 	-1012 	在不连接到数据库发出数据库调用它被引发
+PROGRAM_ERROR 	06501 	-6501 	它被引发当PL/SQL有一个内部问题
+ROWTYPE_MISMATCH 	06504 	-6504 	当游标取值有不兼容的数据类型的变量被引发
+SELF_IS_NULL 	30625 	-30625 	它被引发，当对象的成员方法被调用，但对象类型的实例没有被初始化。
+STORAGE_ERROR 	06500 	-6500 	它被引发当PL/SQL内存不足或内存已损坏
+TOO_MANY_ROWS 	01422 	-1422 	它被引发当SELECT INTO语句返回多行
+VALUE_ERROR 	06502 	-6502 	当算术，转换，截短，或大小约束错误时引发
+ZERO_DIVIDE 	01476 	1476 	它被引发当一个数试图除以零。
+   
+   
+ 创建触发器
+
+创建触发器的语法：
+
+CREATE [OR REPLACE ] TRIGGER trigger_name 
+{BEFORE | AFTER | INSTEAD OF } 
+{INSERT [OR] | UPDATE [OR] | DELETE} 
+[OF col_name] 
+ON table_name 
+[REFERENCING OLD AS o NEW AS n] 
+[FOR EACH ROW] 
+WHEN (condition)  
+DECLARE
+   Declaration-statements
+BEGIN 
+   Executable-statements
+EXCEPTION
+   Exception-handling-statements
+END;   
+
+
+
+{BEFORE | AFTER | INSTEAD OF} : 指定当触发将被执行。在INSTEAD OF子句用于在视图中创建触发器
+
+
+
+PL/SQL包
+
+CREATE PACKAGE cust_sal AS
+   PROCEDURE find_sal(c_id customers.id%type);
+END cust_sal;
+/
+
+包主体
+CREATE OR REPLACE PACKAGE BODY cust_sal AS
+   PROCEDURE find_sal(c_id customers.id%TYPE) IS
+   c_sal customers.salary%TYPE;
+   BEGIN
+      SELECT salary INTO c_sal
+      FROM customers
+      WHERE id = c_id;
+      dbms_output.put_line('Salary: '|| c_sal);
+   END find_sal;
+END cust_sal;
+/
+
+使用包元素
+package_name.element_name;
+
+
+
+索引表
+ 一个索引表（也叫关联数组）是一组键 - 值对。每个键是唯一的，并且用于定位对应的值。键可以是整数或字符串。
+
+使用以下语法创建一个索引表。在这里，我们正在创建一个索引表命名表名，它的键是subscript_type类型以及对应值为 element_type 类型
+
+TYPE type_name IS TABLE OF element_type [NOT NULL] INDEX BY subscript_type;
+
+table_name type_name;
+
+
+示例：
+TYPE salary IS TABLE OF NUMBER INDEX BY VARCHAR2(20);
+   salary_list salary;
+   
+   
+   
+ 嵌套表
+
+嵌套表是就像一个一维数组的元素的数量。然而，嵌套表不同于在以下几方面的数组：
+
+    数组具有元素的声明的数量，但嵌套表不用声明大小。嵌套表的大小可以动态地增加。
+
+    数组总是密集的，也就是说，它总是有连续的下标。嵌套数组初始是致密，但是删除它的元素时就会变成稀疏。
+
+使用以下语法创建一个嵌套表：
+
+TYPE type_name IS TABLE OF element_type [NOT NULL];
+
+table_name type_name;
+
+示例：
+DECLARE
+   TYPE names_table IS TABLE OF VARCHAR2(10);
+   TYPE grades IS TABLE OF INTEGER;
+
+   names names_table;
+   marks grades;
+   total integer;
+BEGIN
+   names := names_table('Kavita', 'Pritam', 'Ayan', 'Rishav', 'Aziz');
+   marks:= grades(98, 97, 78, 87, 92);
+   total := names.count;
+   dbms_output.put_line('Total '|| total || ' Students');
+   FOR i IN 1 .. total LOOP
+      dbms_output.put_line('Student:'||names(i)||', Marks:' || marks(i));
+   end loop;
+END;
+/
+
+
+ 集合方法
+
+PL/SQL提供，使集合更容易使用内置集合方法。下表列出了这些方法和用途：
+S.N. 	方法名称及用途
+1 	EXISTS(n)
+返回TRUE，如果一个集合中的第n个元素的存在;否则返回FALSE
+2 	COUNT
+返回集合当前包含的元素数量
+3 	LIMIT
+检查集合的最大尺寸
+4 	FIRST
+返回在使用整数下标集合的第一个（最小的）索引号
+5 	LAST
+返回在使用整数下标集合的最后一个（最大的）索引号
+6 	PRIOR(n)
+返回集合中索引n前面的索引号
+7 	NEXT(n)
+返回索引n的下一个索引号
+8 	EXTEND
+追加1个空元素到集合
+9 	EXTEND(n)
+追加n个空元素到集合
+10 	EXTEND(n,i)
+追加的第i个元素的集合的n个拷贝
+11 	TRIM
+移除集合的末尾一个元素
+12 	TRIM(n)
+移除一个集合末尾的n个元素
+13 	DELETE
+移除一个集合中的所有元素，设置计数为0
+14 	DELETE(n)
+移除关联数组用数字键或嵌套表中的第n个元素。如果关联数组有一个字符串键，对应于该键的值的元素将被删除。如果n为空，DELETE（N）什么都不做
+15 	DELETE(m,n)
+移除关联数组或嵌套表范围m..n所有元素。如果m大于n或如果m大于或n是零，DELETE（M，N）什么也不做
+
+
+ 集合异常
+
+下表提供了集合异常和引发，当它们：
+集合异常 	引发情况
+COLLECTION_IS_NULL 	尝试在一个原子空(null)的集合操作
+NO_DATA_FOUND 	下标指定被删除的元素，或关联数组的一个不存在的元素
+SUBSCRIPT_BEYOND_COUNT 	下标超过了一个集合的元素数
+SUBSCRIPT_OUTSIDE_LIMIT 	下标超出了允许的范围
+VALUE_ERROR 	下标为空(null)或不可转换的键类型。如果该键被定义为PLS_INTEGER范围，下标是在该范围之外可能会出现这样的异常
